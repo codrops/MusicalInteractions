@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Musical Interactions | Codrops</title>
+		<meta name="description" content="Some experimental ideas for playful musical interactions" />
+		<meta name="piano__keywords" content="music, web audio api, instruments, midi, interaction, web, website, sound" />
+		<meta name="author" content="Codrops" />
+		<link rel="shortcut icon" href="favicon.ico">
+		<link href="https://fonts.googleapis.com/css?family=Quicksand:700|Arapey" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="css/instruments.css" />
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+		<!-- polyfills -->
+		<script src="js/inc/shim/Base64.js" type="text/javascript"></script>
+		<script src="js/inc/shim/Base64binary.js" type="text/javascript"></script>
+		<script src="js/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+		<!-- midi.js package -->
+		<script src="js/midi/audioDetect.js" type="text/javascript"></script>
+		<script src="js/midi/gm.js" type="text/javascript"></script>
+		<script src="js/midi/loader.js" type="text/javascript"></script>
+		<script src="js/midi/plugin.audiotag.js" type="text/javascript"></script>
+		<script src="js/midi/plugin.webaudio.js" type="text/javascript"></script>
+		<script src="js/midi/plugin.webmidi.js" type="text/javascript"></script>
+		<!-- utils -->
+		<script src="js/util/dom_request_xhr.js" type="text/javascript"></script>
+
+		<!--[if IE]>
+  		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<script>document.documentElement.className = 'js';</script>
+	</head>
+	<body class="loading">
+		<svg class="hidden">
+			<symbol id="icon-arrow" viewBox="0 0 24 24">
+				<title>arrow</title>
+				<polygon points="6.3,12.8 20.9,12.8 20.9,11.2 6.3,11.2 10.2,7.2 9,6 3.1,12 9,18 10.2,16.8 "/>
+			</symbol>
+			<symbol id="icon-drop" viewBox="0 0 24 24">
+				<title>drop</title>
+				<path d="M12,21c-3.6,0-6.6-3-6.6-6.6C5.4,11,10.8,4,11.4,3.2C11.6,3.1,11.8,3,12,3s0.4,0.1,0.6,0.3c0.6,0.8,6.1,7.8,6.1,11.2C18.6,18.1,15.6,21,12,21zM12,4.8c-1.8,2.4-5.2,7.4-5.2,9.6c0,2.9,2.3,5.2,5.2,5.2s5.2-2.3,5.2-5.2C17.2,12.2,13.8,7.3,12,4.8z"/><path d="M12,18.2c-0.4,0-0.7-0.3-0.7-0.7s0.3-0.7,0.7-0.7c1.3,0,2.4-1.1,2.4-2.4c0-0.4,0.3-0.7,0.7-0.7c0.4,0,0.7,0.3,0.7,0.7C15.8,16.5,14.1,18.2,12,18.2z"/>
+			</symbol>
+			<symbol id="icon-github" viewBox="0 0 32.58 31.77">
+				<title>github</title>
+				<path d="M16.29,0a16.29,16.29,0,0,0-5.15,31.75c.81.15,1.11-.35,1.11-.79s0-1.41,0-2.77C7.7,29.18,6.74,26,6.74,26a4.31,4.31,0,0,0-1.81-2.38c-1.48-1,.11-1,.11-1a3.42,3.42,0,0,1,2.5,1.68,3.47,3.47,0,0,0,4.74,1.35,3.48,3.48,0,0,1,1-2.18C9.7,23.08,5.9,21.68,5.9,15.44a6.3,6.3,0,0,1,1.68-4.37,5.86,5.86,0,0,1,.16-4.31s1.37-.44,4.48,1.67a15.44,15.44,0,0,1,8.16,0c3.11-2.11,4.48-1.67,4.48-1.67A5.85,5.85,0,0,1,25,11.07a6.29,6.29,0,0,1,1.67,4.37c0,6.26-3.81,7.63-7.44,8a3.89,3.89,0,0,1,1.11,3c0,2.18,0,3.93,0,4.47s.29.94,1.12.78A16.29,16.29,0,0,0,16.29,0Z"></path>
+			</symbol>
+		</svg>
+		<main>
+			<section class="intro flexy flexy--center">
+				<header class="intro__header flexy flexy--row">
+					<div class="codrops-links">
+						<a class="codrops-icon codrops-icon--prev" href="http://tympanus.net/Development/TiltHoverEffects/" title="Previous Demo"><svg class="icon icon--arrow"><use xlink:href="#icon-arrow"></use></svg></a>
+						<a class="codrops-icon codrops-icon--drop" href="http://tympanus.net/codrops/?p=28980" title="Back to the article"><svg class="icon icon--drop"><use xlink:href="#icon-drop"></use></svg></a>
+					</div>
+					<a href="https://github.com/codrops/MusicalInteractions/" class="link-github" title="View this Project on GitHub"><svg class="icon icon--github"><use xlink:href="#icon-github"></use></svg></a>
+				</header>
+				<h1 class="intro__title">Tempo</h1>
+				<p class="intro__tagline">Some experimental ideas for playful musical interactions</p>
+				<div class="interaction"></div>
+			</section>
+			<section class="content content--instrument content--piano content--cursor-dark">
+				<div class="piano instrument">
+					<svg class="piano__inner" xmlns:note="http://tympanus.net/codrops" viewBox="0 0 2080 200" preserveAspectRatio="none">
+						<g class="piano__keys piano__keys--natural">
+							<rect note:id="0" x="0" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="2" x="40" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="3" x="80" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="5" x="120" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="7" x="160" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="8" x="200" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="10" x="240" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="12" x="280" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="14" x="320" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="15" x="360" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="17" x="400" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="19" x="440" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="20" x="480" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="22" x="520" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="24" x="560" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="26" x="600" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="27" x="640" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="29" x="680" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="31" x="720" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="32" x="760" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="34" x="800" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="36" x="840" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="38" x="880" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="39" x="920" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="41" x="960" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="43" x="1000" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="44" x="1040" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="46" x="1080" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="48" x="1120" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="50" x="1160" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="51" x="1200" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="53" x="1240" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="55" x="1280" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="56" x="1320" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="58" x="1360" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="60" x="1400" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="62" x="1440" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="63" x="1480" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="65" x="1520" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="67" x="1560" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="68" x="1600" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="70" x="1640" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="72" x="1680" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="74" x="1720" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="75" x="1760" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="77" x="1800" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="79" x="1840" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="80" x="1880" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="82" x="1920" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="84" x="1960" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="86" x="2000" class="piano__key piano__key--natural" width="40" height="200"/>
+							<rect note:id="87" x="2040" class="piano__key piano__key--natural" width="40" height="200"/>
+						</g>
+						<g class="piano__keys piano__keys--flat">
+							<rect note:id="1" x="30" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="4" x="110" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="6" x="150" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="9" x="230" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="11" x="270" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="13" x="310" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="16" x="390" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="18" x="430" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="21" x="510" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="23" x="550" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="25" x="590" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="28" x="670" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="30" x="710" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="33" x="790" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="35" x="830" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="37" x="870" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="40" x="950" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="42" x="990" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="45" x="1070" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="47" x="1110" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="49" x="1150" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="52" x="1230" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="54" x="1270" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="57" x="1350" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="59" x="1390" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="61" x="1430" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="64" x="1510" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="66" x="1550" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="69" x="1630" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="71" x="1670" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="73" x="1710" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="76" x="1790" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="78" x="1830" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="81" x="1910" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="83" x="1950" class="piano__key piano__key--flat" width="20" height="130"/>
+							<rect note:id="85" x="1990" class="piano__key piano__key--flat" width="20" height="130"/>
+						</g>
+					</svg>
+				</div><!-- piano -->
+			</section>
+			<section id="wavebg" class="content content--highlight flexy flexy--center">
+				<p class="content__highlight">And those who were seen dancing were thought to be insane by those who could not hear the music.<br><span class="tiny">&mdash;Friedrich Nietzsche</span></p>
+			</section>
+			<section class="content flexy content--bg content--bg-mic content--cursor-light">
+				<div class="content__inner content__inner--fheight flexy flexy--center">
+					<h2 class="content__title content__title--center content__title--light">Voice</h2>
+					<p class="content__subtitle content__subtitle--light">From microphones to power amps and PA equipment, we've collected the best performing solutions for you.</p>
+					<a href="#" class="link-more">Explore</a>
+				</div>
+				<div class="interaction interaction--corner interaction--light"></div>
+			</section>
+			<section class="content content--nopadding content--boxes flexy flexy--row flexy--stretch">
+				<div class="content__inner content__inner--half content__inner--c1 flexy flexy--center">
+					<h2 class="content__title">Since 1979</h2>
+					<p class="content__subtitle content__subtitle--light">Learn how Tempo has become the leading music production and review hub in the history of mankind.</p>
+					<a href="#" class="link-more link-more--light">Read our story</a>
+				</div>
+				<div class="content__inner content__inner--half content__inner--c2 flexy flexy--center">
+					<h2 class="content__title">The Hub</h2>
+					<p class="content__subtitle">Explore how Tempo has helped thousands of artist find their perfect equipment &amp; get connected.</p>
+					<a href="#" class="link-more">Join the hub</a>
+				</div>
+			</section>
+			<section class="content content--instrument content--guitar content--cursor-dark">
+				<div class="content__inner content__inner--medium flexy flexy--center">
+					<h2 class="content__title">Guitars</h2>
+					<p class="content__subtitle content__subtitle--light">Fretted fingerboards and plectrums, six or twelve strings, we know what guitar lovers are truly into.</p>
+					<a href="#" class="link-more">Explore</a>
+				</div>
+				<div class="guitar instrument">
+					<svg class="guitar__inner" preserveAspectRatio="xMinYMax meet" xmlns:note="http://tympanus.net/codrops" viewBox="0 0 1440 780">
+						<path class="guitar__body" d="M-130.9,612.4c0-280,106.5-487.9,356.5-487.9c250,0,347.8,167.6,428.3,167.6c80.4,0,223.9-72.1,350-17
+						c126.1,55.2,132.6,275.8,132.6,333.1c0,57.3-6.5,277.9-132.6,333.1c-126.1,55.2-269.6-17-350-17c-80.4,0-178.3,167.6-428.3,167.6
+						C-24.4,1091.8-130.9,892.4-130.9,612.4z" />
+						<path class="guitar__middle" d="M575.7,608.1c0,79.1,64.5,143.6,143.6,143.6c79.1,0,143.6-64.5,143.6-143.6c0-79.1-64.5-143.6-143.6-143.6
+						C640.2,464.5,575.7,529,575.7,608.1z" />
+						<path class="guitar__neck" d="M842.7,671.9V544.3h1087.6v127.6H842.7z" />
+						<path class="guitar__stringcut" d="M223.3,487.6v249.1c0,71.5-32.3,33.9-38.7,72.9h-15.6c-7.5,0-13.6-5.4-13.6-12V427.3c0-6.6,6.1-12,13.6-12h15.6
+						C191,454.3,223.3,417,223.3,487.6z" />
+						<g class="guitar__string-wrap">
+							<rect class="guitar__string-hover" note:id="19" x="184.5" y="547.6" width="1740.7" height="13.2">
+							</rect>
+							<line class="guitar__string" x1="1925.2" y1="554.2" x2="183.6" y2="554.2" />
+						</g>
+						<g class="guitar__string-wrap">
+							<rect class="guitar__string-hover" note:id="24" x="184.5" y="569.3" width="1740.7" height="13.2">
+							</rect>
+							<line class="guitar__string" x1="1925.2" y1="575.9" x2="183.6" y2="575.8" />
+						</g>
+						<g class="guitar__string-wrap">
+							<rect class="guitar__string-hover" note:id="29" x="184.5" y="590.5" width="1740.7" height="13.2">
+							</rect>
+							<line class="guitar__string" x1="1925.2" y1="597.5" x2="183.6" y2="597.4" />
+						</g>
+						<g class="guitar__string-wrap">
+							<rect class="guitar__string-hover" note:id="34" x="184.5" y="612.5" width="1740.7" height="13.2">
+							</rect>
+							<line class="guitar__string" x1="1925.2" y1="619.1" x2="183.6" y2="619" />
+						</g>
+						<g class="guitar__string-wrap">
+							<rect class="guitar__string-hover" note:id="38" x="184.5" y="634.1" width="1740.7" height="13.2">
+							</rect>
+							<line class="guitar__string" x1="1925.2" y1="640.7" x2="183.6" y2="640.6" />
+						</g>
+						<g class="guitar__string-wrap">
+							<rect class="guitar__string-hover" note:id="43" x="184.5" y="655.7" width="1740.7" height="13.2">
+							</rect>
+							<line class="guitar__string" x1="1925.2" y1="662.3" x2="183.6" y2="662.2" />
+						</g>
+					</svg>
+				</div><!-- /guitar -->
+				<div class="interaction interaction--corner"></div>
+			</section>
+			<section class="content content--instrument content--instrument-alt content--kalimba content--cursor-dark flexy">
+				<div class="content__inner content__inner--medium flexy flexy--center">
+					<h2 class="content__title">Kalimbas</h2>
+					<p class="content__subtitle">Ethnic music instruments are more than just sound makers. They bear magnificent stories and we want to tell them all.</p>
+					<a href="#" class="link-more">Explore</a>
+				</div>
+				<div class="kalimba instrument">
+					<svg class="kalimba__inner" xmlns:note="http://tympanus.net/codrops" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMin meet">
+						<path note:id="51" class="kalimba__tine" d="M217.4,438.8c0,17.7,16.7,32.1,37.1,32.1c20.4,0,37.1-14.5,37.1-32.1V0h-74.2V438.8z"/>
+						<path note:id="48" class="kalimba__tine" d="M350.5,503c0,17.7,16.7,32.1,37.1,32.1c20.4,0,37.1-14.5,37.1-32.1V0h-74.2V503z"/>
+						<path note:id="44" class="kalimba__tine" d="M483.2,567.2c0,17.7,16.7,32.1,37.1,32.1c20.4,0,37.1-14.5,37.1-32.1V0h-74.2V567.2z"/>
+						<path note:id="41" class="kalimba__tine" d="M616.4,631.5c0,17.7,16.7,32.1,37.1,32.1c20.4,0,37.1-14.5,37.1-32.1V0h-74.2V631.5z"/>
+						<path note:id="39" class="kalimba__tine" d="M749.1,681.1c0,17.7,16.7,32.1,37.1,32.1c20.4,0,37.1-14.5,37.1-32.1V0h-74.2V681.1z"/>
+						<path note:id="43" class="kalimba__tine" d="M882.6,590.4c0,17.7,16.7,32.1,37.1,32.1c20.4,0,37.1-14.5,37.1-32.1V0h-74.2V590.4z"/>
+						<path note:id="46" class="kalimba__tine" d="M1015.4,517.3c0,17.7,16.7,32.1,37.1,32.1c20.4,0,37.1-14.5,37.1-32.1V0h-74.2V517.3z"/>
+						<path note:id="50" class="kalimba__tine" d="M1148.5,462c0,17.7,16.7,32.1,37.1,32.1c20.4,0,37.1-14.5,37.1-32.1V0h-74.2V462z"/>
+					</svg>
+				</div><!-- /kalimba -->
+				<div class="interaction interaction--corner"></div>
+			</section>
+			<section class="content content--instrument content--chime content--cursor-dark flexy">
+				<div class="content__inner content__inner--medium flexy flexy--center">
+					<h2 class="content__title">Chimes</h2>
+					<p class="content__subtitle">Tubular bells have their own little life. What are their secrets? Spectacular sounds!</p>
+					<a href="#" class="link-more">Explore</a>
+				</div>
+				<div class="chime chime--large instrument">
+					<svg class="chime__inner" xmlns:note="http://tympanus.net/codrops" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMin meet">
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="105.9" y1="0" x2="105.9" y2="107.4" />
+							<rect note:id="50" class="chime__pipe" x="71.3" y="87.3" width="69.2" height="618.5" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="217.5" y1="0" x2="217.5" y2="107.4" />
+							<rect note:id="51" class="chime__pipe" x="182.9" y="87.3" width="69.2" height="606.1" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="329.2" y1="0" x2="329.2" y2="107.4" />
+							<rect note:id="52" class="chime__pipe" x="294.6" y="87.3" width="69.2" height="593.8" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="440.9" y1="0" x2="440.9" y2="107.4" />
+							<rect note:id="53" class="chime__pipe" x="406.3" y="87.3" width="69.2" height="581.4" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="552.5" y1="0" x2="552.5" y2="107.4" />
+							<rect note:id="54" class="chime__pipe" x="517.9" y="87.3" width="69.2" height="569" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="664.2" y1="0" x2="664.2" y2="107.4" />
+							<rect note:id="55" class="chime__pipe" x="629.6" y="87.3" width="69.2" height="556.6" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="775.8" y1="0" x2="775.8" y2="107.4" />
+							<rect note:id="56" class="chime__pipe" x="741.2" y="87.3" width="69.2" height="544.3" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="887.5" y1="0" x2="887.5" y2="107.4" />
+							<rect note:id="57" class="chime__pipe" x="852.9" y="87.3" width="69.2" height="531.9" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="999.1" y1="0" x2="999.1" y2="107.4" />
+							<rect note:id="58" class="chime__pipe" x="964.5" y="87.3" width="69.2" height="519.5" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="1110.8" y1="0" x2="1110.8" y2="107.4" />
+							<rect note:id="59" class="chime__pipe" x="1076.2" y="87.3" width="69.2" height="507.2" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="1222.5" y1="0" x2="1222.5" y2="107.4" />
+							<rect note:id="60" class="chime__pipe" x="1187.9" y="87.3" width="69.2" height="494.8" />
+						</g>
+						<g class="chime__pipe-wrap">
+							<line class="chime__string" x1="1334.1" y1="0" x2="1334.1" y2="107.4" />
+							<rect note:id="61" class="chime__pipe" x="1299.5" y="87.3" width="69.2" height="482.4" />
+						</g>
+					</svg>
+				</div>
+				<div class="interaction interaction--corner"></div>
+			</section>
+			<section class="content content--instrument content--harp content--instrument-alt content--cursor-dark">
+				<div class="content__inner content__inner--medium flexy flexy--center">
+					<h2 class="content__title">Harps</h2>
+					<p class="content__subtitle">Bare fingers are the Harp's true friends, plucking to create sounds of divinity. We got them all.</p>
+					<a href="#" class="link-more">Explore</a>
+				</div>
+				<div class="harp instrument">
+					<svg class="harp__inner" xmlns:note="http://tympanus.net/codrops" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid meet">
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--c" d="M162.5,1462V84.2V81"/>
+							<polygon note:id="3" class="harp__string-hover" points="171,85.9 171,1452.2 162.5,1461.3 162,1461.8 153,1471.4 152.4,82.6 162,84.1 162.5,84.2 170.5,85.5"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M180.5,1442V88.7v-0.1V84"/>
+							<polygon note:id="5" class="harp__string-hover" points="190,91.6 190,1431.8 180,1442 180,1442 179.9,1442.4 171,1452.2 171,86 171.7,86 180.1,88.6 180.5,88.7 189.8,91.6"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M198.5,90v4.2V1423"/>
+							<polygon note:id="7" class="harp__string-hover" points="210,98 210,1410.4 198.5,1422.7 190,1431.8 190,91.5 198.5,94.2 208.1,97.3"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--f" d="M217.5,96v4.8V1402"/>
+							<polygon note:id="8" class="harp__string-hover" points="229,105.2 229,1390.1 217.5,1402.4 210,1410.4 210,98 217.5,100.8 228.3,105"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M237.5,104v4.1V1381"/>
+							<polygon note:id="10" class="harp__string-hover" points="248,112 248,1369.7 237.5,1381 229,1390.1 229,105.2 237.5,108 246.8,111.2"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M255.5,114v1.5v0.5v1246"/>
+							<polygon note:id="12" class="harp__string-hover" points="267,123.7 267,1349.4 255.5,1361.7 248,1369.7 248,112 255.5,116 261.6,119.3"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M275.5,129v1.4v0.8V1340"/>
+							<polygon note:id="14" class="harp__string-hover" points="286,140.7 286,1329.1 275.5,1340.3 267,1349.4 267,123.7 275.5,131.1 282.4,137.1 285.9,140.4"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--c" d="M294.5,1320V149v-1.9V147"/>
+							<polygon note:id="15" class="harp__string-hover" points="305,159 305,1308.7 294,1319.9 294,1319.9 286,1329.1 286,140.7 294.5,149 301.7,156"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M313.5,164v0.7v2.6V1300"/>
+							<polygon note:id="17" class="harp__string-hover" points="324,177.7 324,1288.4 313.5,1299.6 305,1308.7 305,159 313.5,167.4 319.3,173.1 322.8,176.6"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M332.5,187v0.2V1279"/>
+							<polygon note:id="19" class="harp__string-hover" points="343,198.8 343,1268 332.5,1279.3 324,1288.4 324,177.7 332.5,187.2"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--f" d="M350.5,203v3.8v1052.7v-0.5"/>
+							<polygon note:id="20" class="harp__string-hover" points="362,218.9 362,1247.7 361.3,1248.2 350,1259.5 350,1259.5 350,1260 350,1260 347.9,1262.4 343,1268 343,198.8 350.5,206.8"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M370.5,225v4.1V1239"/>
+							<polygon note:id="22" class="harp__string-hover" points="381,243.2 381,1227.1 380.8,1227.3 370.5,1238.6 362,1247.7 362,218.9 364,221.1 367.8,225.5 370.5,229.1"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M389.5,247v6.2v964v-0.2"/>
+							<polygon note:id="24" class="harp__string-hover" points="401,267.8 401,1205.9 398.9,1207.9 397.8,1208.9 397.8,1208.9 396.8,1209.9 389.5,1216.8 389,1217.2 
+								389,1217.7 388.8,1218.2 381,1227.1 381,243.2 383.8,246 389.5,253.2"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M409.5,1197V279.5v-7V269"/>
+							<polygon note:id="26" class="harp__string-hover" points="420,293.6 420,1185.6 409,1196.8 409,1196.8 401,1205.9 401,267.8 404.8,273.2 409.5,279.5"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--c" d="M427.5,294v4v6.1v874"/>
+							<polygon note:id="27" class="harp__string-hover" points="438,318.1 438,1166.3 427.5,1177.6 420,1185.6 420,293.6 424.9,300.5 427.5,304"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M447.5,322v1.4v6.9V1156"/>
+							<polygon note:id="29" class="harp__string-hover" points="458,344.3 458,1144.9 447.5,1156.2 438,1166.3 438,318.1 442.4,323.7 445.5,327.7 447.5,330.3"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M465.5,351v3.7v781.7v-0.4"/>
+							<polygon note:id="31" class="harp__string-hover" points="476,369.1 476,1125.6 475.3,1126.1 465,1136.4 465,1136.4 465,1136.9 465,1136.9 462.9,1139.3 
+								458,1144.9 458,344.3 464.9,353.9 465.5,354.7"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--f" d="M485.5,379v1.9V1115"/>
+							<polygon note:id="32" class="harp__string-hover" points="497,395.2 497,1103.2 485.5,1115.5 476,1125.6 476,369.1 485.5,380.9 486,381.5"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M504.5,1095V406"/>
+							<polygon note:id="34" class="harp__string-hover" points="515,420 515,1083.9 504.5,1095.1 497,1103.2 497,395.2 507,409"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M523.5,1074L523.5,1074v-0.2V429.6V427"/>
+							<polygon note:id="36" class="harp__string-hover" points="535,440.5 535,1062.5 535,1062.5 534.3,1062.9 534.3,1063 523.5,1073.8 523,1074.3 523,1074.8 521,1077.1 519.9,1078.3 515,1083.9 515,420 519,425.3 523.5,429.6 527.6,433.5"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M542.5,1054V450"/>
+							<polygon note:id="38" class="harp__string-hover" points="553,458.4 553,1042.9 552.8,1043.2 542.5,1054.5 535,1062.5 535,440.5 548.1,453.4"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--c" d="M560.5,1034V469"/>
+							<polygon note:id="39" class="harp__string-hover" points="571,471.6 571,1024 571,1024 567.4,1027.4 567.3,1027.5 567.2,1027.7 566.7,1028.1 566.5,1028.3 565.2,1029.6 565.1,1029.7 560.5,1034.2 560,1034.7 560,1034.7 559.8,1035.2 553,1042.9 553,458.4 558.4,463.5 567.2,469.1"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M580.5,1013.8l-0.3-532.4"/>
+							<polygon note:id="41" class="harp__string-hover" points="592,483.5 592,1001.5 581,1013.8 581,1013.8 581,1013.8 580.8,1014 580.8,1014 580.6,1014.1 571,1023.9 571,471.6 588.2,481.7"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M599.5,993V495"/>
+							<polygon note:id="43" class="harp__string-hover" points="610,494.8 610,981.9 609.8,982.2 599.5,993.4 592,1001.5 592,483.5 609.3,494.2"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--f" d="M618.5,505v466.6v0.4"/>
+							<polygon note:id="44" class="harp__string-hover" points="630,506.1 630,960.8 629.5,961.2 627.7,962.9 626.6,964 626.5,964 625.7,964.8 618.5,971.6 618,972.1 618,972.6 617.8,973.1 610,981.9 610,494.8 627.8,505.5"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M637.5,514v0.7V953"/>
+							<polygon note:id="46" class="harp__string-hover" points="648,511.4 648,941.5 637.5,952.8 630,960.8 630,506.1"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M656.5,932V521"/>
+							<polygon note:id="48" class="harp__string-hover" points="667,517 667,921.2 659.1,929.6 656.5,932.4 652.2,937 648,941.5 648,511.4 648.7,511.7"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M676.5,528v381.5v0v0v0.5"/>
+							<polygon note:id="50" class="harp__string-hover" points="687,521.3 687,899.8 685,901.6 684.1,902.4 683.1,903.3 676.5,909.5 676,910 676,911 674.5,912.8 672.9,914.7 672.8,914.8 671.7,916.1 671.2,916.6 671,917.1 671,917.1 670.4,917.5 667.7,920.5 667,921.2 667,517 669.6,517.6 679.1,520.1"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--c" d="M695.5,891V534"/>
+							<polygon note:id="51" class="harp__string-hover" points="706,524.3 706,879.4 695.5,890.7 687,899.8 687,521.3 690.8,521.9"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M715.5,869V536"/>
+							<polygon note:id="53" class="harp__string-hover" points="725,527.2 725,859.1 715.5,869.2 706,879.4 706,524.3 711.4,525.1"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M733.5,850V536"/>
+							<polygon note:id="55" class="harp__string-hover" points="744,526.9 744,838.7 733.5,850 725,859.1 725,527.2 729.7,528 730.8,527.9"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--f" d="M751.5,831V535"/>
+							<polygon note:id="56" class="harp__string-hover" points="764,525.6 764,817.3 751.5,830.7 744,838.7 744,526.9"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M772.5,809V529"/>
+							<polygon note:id="58" class="harp__string-hover" points="783,523.9 783,797 772.5,808.2 764,817.3 764,525.6 772.9,524.9 776.4,524.6"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M791.5,790V528"/>
+							<polygon note:id="60" class="harp__string-hover" points="801,519.5 801,777.7 791.5,787.9 783,797 783,523.9 793,522.6"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M810.5,770V524"/>
+							<polygon note:id="62" class="harp__string-hover" points="820,512.5 820,757.4 801,777.7 801,519.5"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--c" d="M829.5,750V521"/>
+							<polygon note:id="63" class="harp__string-hover" points="839,505.1 839,737 829.5,747.2 820,757.4 820,512.5"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M848.5,730V514"/>
+							<polygon note:id="65" class="harp__string-hover" points="859,498.1 859,715.6 848.5,726.9 839,737 839,505.1"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M868.5,710V509"/>
+							<polygon note:id="67" class="harp__string-hover" points="878,490.8 878,695.3 868.5,705.5 859,715.6 859,498.1"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--f" d="M886.5,690V501"/>
+							<polygon note:id="68" class="harp__string-hover" points="897,483.8 897,675 886.5,686.2 878,695.3 878,490.8"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M906.5,670V495"/>
+							<polygon note:id="70" class="harp__string-hover" points="916,475.8 916,654.6 906.5,664.8 897,675 897,483.8 903,481.4 906.6,480.4"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M924.5,650V486"/>
+							<polygon note:id="72" class="harp__string-hover" points="934,467 934,635.3 924.5,645.5 916,654.6 916,475.8 922.9,472.4"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M944.5,629V477"/>
+							<polygon note:id="74" class="harp__string-hover" points="955,457.6 955,612.9 934,635.3 934,467 944,462.5"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--c" d="M963.5,610V466"/>
+							<polygon note:id="75" class="harp__string-hover" points="973,448.7 973,593.6 963.5,603.8 955,612.9 955,457.6"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M981.5,590V456"/>
+							<polygon note:id="77" class="harp__string-hover" points="993,438.4 993,572.2 981.5,584.5 973,593.6 973,448.7 984.4,443.3 987.3,442"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M1001.5,569V444"/>
+							<polygon note:id="79" class="harp__string-hover" points="1011,426.3 1011,552.9 1001.5,563.1 993,572.2 993,438.4 1005.1,430.4"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string harp__string--f" d="M1019.5,550V430"/>
+							<polygon note:id="80" class="harp__string-hover" points="1031,413.5 1031,531.5 1019.5,543.8 1011,552.9 1011,426.3 1025.4,417"/>
+						</g>
+						<g class="harp__string-wrap">
+							<path class="harp__string" d="M1039.5,530V415"/>
+							<polygon note:id="82" class="harp__string-hover" points="1050,401.6 1050,511.2 1039.5,522.4 1031,531.5 1031,413.5"/>
+						</g>
+						<path class="harp__body" d="M1205.8,331.5c-80.1-50.9-218.6,9.7-304.5,37.1c-85.9,27.3-204.2,135.3-328.7-191.4C448.1-149.5,102.9-163.1,102.9-163.1l1.7,254.3c26.9,0.8,91.8,14.2,128.8,35c37,20.7,145.6,136,188.6,203.2c43,67.1,124.4,227.9,309.5,217.8c185-10.1,283.3-106.8,315.6-126.7c32.3-19.9,32.3,0.9,32.3,0.9l-0.8,33.9L70.2,1539.8c0,0-56.7,58,59.3,61.4c116,3.4,307.4,3.4,307.4,3.4l753.5-1146C1190.3,458.5,1285.8,382.4,1205.8,331.5z"/>
+						<path class="harp__body" d="M142.1,1544.6c0,0-63.5,55.9-79.9,38.8c-26.4-27.6-14.3-195.5-14.3-195.5l2.3-1557.1l94.4,4.1L142.1,1544.6z"/>
+					</svg>
+				</div>
+				<div class="interaction interaction--corner"></div>
+			</section>
+			<section class="content content--instrument content--timpani content--cursor-dark">
+				<div class="content__inner content__inner--medium flexy flexy--center">
+					<h2 class="content__title">Timpani</h2>
+					<p class="content__subtitle content__subtitle--light">What would any classical orchestra or the space odyssey be without the thunder sound that makes our hearts soar?</p>
+					<a href="#" class="link-more">Explore</a>
+				</div>
+				<div class="timpani instrument">
+					<svg class="timpani__inner" xmlns:note="http://tympanus.net/codrops" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMax meet">
+						<circle note:id="8" class="timpani__drum timpani__drum--large" cx="148.7" cy="228.5" r="263.8"/>
+						<circle note:id="13" class="timpani__drum timpani__drum--medium" cx="556.3" cy="632.5" r="239"/>
+						<circle note:id="17" class="timpani__drum timpani__drum--small" cx="1068.7" cy="557.5" r="214.3"/>
+						<circle note:id="20" class="timpani__drum timpani__drum--xsmall" cx="1365.5" cy="197.7" r="189.6"/>
+					</svg>
+				</div>
+				<div class="interaction interaction--light interaction--corner"></div>
+			</section>
+			<section class="content content--instrument content--xylophone content--instrument-alt content--cursor-dark">
+				<div class="content__inner content__inner--medium flexy flexy--center">
+					<h2 class="content__title">Xylophones</h2>
+					<p class="content__subtitle">Marimba, balafons and even semantrons make all part of our collection. Idiophone lovers, we've got you covered.</p>
+					<a href="#" class="link-more">Explore</a>
+				</div>
+				<div class="xylophone instrument">
+					<svg class="xylophone__inner" xmlns:note="http://tympanus.net/codrops" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMax meet">
+						<g class="xylophone__base xylophone__base--lower">
+							<rect x="-0.5" y="445.4" width="1441.2" height="34.5"/>
+							<polygon points="1440.8,577.1 -0.5,692.7 -0.5,727.3 1440.8,611.7"/>
+						</g>
+						<g class="xylophone__base xylophone__base--lower">
+							<rect x="-0.5" y="311.3" width="1441.2" height="34.5"/>
+							<polygon points="1440.8,204.8 -0.5,112.1 -0.5,146.7 1440.8,239.4"/>
+						</g>
+						<g class="xylophone__keys xylophone__keys--natural">
+							<rect note:id="44" y="380" class="xylophone__key xylophone__key--natural" width="42" height="405"/>
+							<rect note:id="46" x="55" y="380" class="xylophone__key xylophone__key--natural" width="43" height="400"/>
+							<rect note:id="48" x="112" y="380" class="xylophone__key xylophone__key--natural" width="42" height="395"/>
+							<rect note:id="50" x="167" y="380" class="xylophone__key xylophone__key--natural" width="43" height="389"/>
+							<rect note:id="51" x="223" y="380" class="xylophone__key xylophone__key--natural" width="44" height="385"/>
+							<rect note:id="53" x="279" y="380" class="xylophone__key xylophone__key--natural" width="43" height="380"/>
+							<rect note:id="55" x="336" y="380" class="xylophone__key xylophone__key--natural" width="41" height="375"/>
+							<rect note:id="56" x="391" y="380" class="xylophone__key xylophone__key--natural" width="43" height="369"/>
+							<rect note:id="58" x="447" y="380" class="xylophone__key xylophone__key--natural" width="43" height="364"/>
+							<rect note:id="60" x="503" y="380" class="xylophone__key xylophone__key--natural" width="43" height="359"/>
+							<rect note:id="62" x="558" y="380" class="xylophone__key xylophone__key--natural" width="44" height="354"/>
+							<rect note:id="63" x="616" y="380" class="xylophone__key xylophone__key--natural" width="41" height="349"/>
+							<rect note:id="65" x="671" y="380" class="xylophone__key xylophone__key--natural" width="43" height="344"/>
+							<rect note:id="67" x="726" y="380" class="xylophone__key xylophone__key--natural" width="43" height="339"/>
+							<rect note:id="68" x="783" y="380" class="xylophone__key xylophone__key--natural" width="42" height="335"/>
+							<rect note:id="70" x="838" y="380" class="xylophone__key xylophone__key--natural" width="44" height="330"/>
+							<rect note:id="72" x="895" y="380" class="xylophone__key xylophone__key--natural" width="42" height="324"/>
+							<rect note:id="74" x="950" y="380" class="xylophone__key xylophone__key--natural" width="44" height="319"/>
+							<rect note:id="75" x="1007" y="380" class="xylophone__key xylophone__key--natural" width="42" height="314"/>
+							<rect note:id="77" x="1062" y="380" class="xylophone__key xylophone__key--natural" width="42" height="309"/>
+							<rect note:id="79" x="1117" y="380" class="xylophone__key xylophone__key--natural" width="44" height="305"/>
+							<rect note:id="80" x="1174" y="380" class="xylophone__key xylophone__key--natural" width="43" height="299"/>
+							<rect note:id="82" x="1230" y="380" class="xylophone__key xylophone__key--natural" width="43" height="294"/>
+							<rect note:id="84" x="1286" y="380" class="xylophone__key xylophone__key--natural" width="42" height="289"/>
+							<rect note:id="86" x="1342" y="380" class="xylophone__key xylophone__key--natural" width="42" height="284"/>
+							<rect note:id="87" x="1398" y="380" class="xylophone__key xylophone__key--natural" width="42" height="278"/>
+						</g>
+						<g class="xylophone__keys xylophone__keys--flat">
+							<rect note:id="45" x="27" y="16" class="xylophone__key xylophone__key--flat" width="43" height="400"/>
+							<rect note:id="47" x="84" y="21" class="xylophone__key xylophone__key--flat" width="42" height="395"/>
+							<rect note:id="49" x="139" y="27" class="xylophone__key xylophone__key--flat" width="43" height="389"/>
+							<rect note:id="52" x="253" y="36" class="xylophone__key xylophone__key--flat" width="43" height="380"/>
+							<rect note:id="54" x="310" y="41" class="xylophone__key xylophone__key--flat" width="41" height="375"/>
+							<rect note:id="57" x="421" y="52" class="xylophone__key xylophone__key--flat" width="43" height="364"/>
+							<rect note:id="59" x="477" y="57" class="xylophone__key xylophone__key--flat" width="43" height="359"/>
+							<rect note:id="61" x="532" y="62" class="xylophone__key xylophone__key--flat" width="44" height="354"/>
+							<rect note:id="64" x="643" y="72" class="xylophone__key xylophone__key--flat" width="43" height="344"/>
+							<rect note:id="66" x="698" y="77" class="xylophone__key xylophone__key--flat" width="43" height="339"/>
+							<rect note:id="69" x="811" y="86" class="xylophone__key xylophone__key--flat" width="44" height="330"/>
+							<rect note:id="71" x="868" y="92" class="xylophone__key xylophone__key--flat" width="42" height="324"/>
+							<rect note:id="73" x="923" y="97" class="xylophone__key xylophone__key--flat" width="44" height="319"/>
+							<rect note:id="76" x="1038" y="107" class="xylophone__key xylophone__key--flat" width="42" height="309"/>
+							<rect note:id="78" x="1093" y="111" class="xylophone__key xylophone__key--flat" width="44" height="305"/>
+							<rect note:id="81" x="1205" y="122" class="xylophone__key xylophone__key--flat" width="43" height="294"/>
+							<rect note:id="83" x="1261" y="127" class="xylophone__key xylophone__key--flat" width="42" height="289"/>
+							<rect note:id="85" x="1317" y="132" class="xylophone__key xylophone__key--flat" width="42" height="284"/>
+						</g>
+					</svg>
+				</div>
+				<div class="interaction interaction--corner"></div>
+			</section>	
+			<section class="content content--nopadding content--boxes flexy flexy--row flexy--stretch">
+				<div class="content__inner content__inner--half content__inner--c3 flexy flexy--center">
+					<h2 class="content__title">Since 1979</h2>
+					<p class="content__subtitle content__subtitle--light">Learn how Tempo has become the leading music production and review hub in the history of mankind.</p>
+					<a href="#" class="link-more link-more--light">Read our story</a>
+				</div>
+				<div class="content__inner content__inner--half content__inner--c2 flexy flexy--center">
+					<h2 class="content__title">The Hub</h2>
+					<p class="content__subtitle">Explore how Tempo has helped thousands of artist find their perfect equipment &amp; get connected.</p>
+					<a href="#" class="link-more">Join the hub</a>
+				</div>
+			</section>
+			<section class="content flexy content--bg content--bg-violin content--cursor-light">
+				<div class="content__inner content__inner--fheight flexy flexy--center">
+					<h2 class="content__title content__title--light">Strings</h2>
+					<p class="content__subtitle content__subtitle--light">Mahogany and maple, Guarneri del Gesu and Stradivari: Welcome to the world of high-quality strings.</p>
+					<a href="#" class="link-more">Explore</a>
+				</div>
+				<div class="interaction interaction--corner interaction--light"></div>
+			</section>
+			<section class="content content--instrument content--tiny flexy flexy--center">
+				<div class="content__inner flexy flexy--center">
+					<h2 class="content__title">And More</h2>
+					<p class="content__subtitle">From tubas to saxophones and other excellent musical friends, we have them all.</p>
+				</div>
+				<div class="flexy flexy--row flexy--center flexy--stretch flexy--padding">
+					<div class="tiny-instrument tiny-instrument--flute"><img class="tiny-instrument__image" src="img/instruments/panflute.svg" alt="Pan Flute"/></div>
+					<div class="tiny-instrument tiny-instrument--tuba"><img class="tiny-instrument__image" src="img/instruments/tuba.svg" alt="Tuba"/></div>
+					<div class="tiny-instrument tiny-instrument--sax"><img class="tiny-instrument__image" src="img/instruments/saxophone.svg" alt="Saxophone"/></div>
+				</div>
+			</section>
+			<!-- Related demos -->
+			<section class="content content--related">
+				<div class="chime chime--tiny instrument">
+					<svg class="chime__inner" width="80px" height="80px" xmlns:note="http://tympanus.net/codrops" viewBox="0 0 100 100">
+						<g class="chime__pipe-wrap">
+							<path class="chime__string" d="M24.8,9.2v8.4"/>
+							<path note:id="62" class="chime__pipe" d="M22.5,95V17.7H27V95H22.5z"/>
+						</g>
+						<g class="chime__pipe-wrap">
+							<path class="chime__string" d="M37.2,9.2v8.4"/>
+							<path note:id="65" class="chime__pipe" d="M34.9,82.1V17.7h4.5v64.4H34.9z"/>
+						</g>
+						<g class="chime__pipe-wrap">
+							<path class="chime__string" d="M49.5,9.2v8.4"/>
+							<path note:id="67" class="chime__pipe" d="M47.3,69.9V17.7h4.5v52.2H47.3z"/>
+						</g>
+						<g class="chime__pipe-wrap">
+							<path class="chime__string" d="M61.9,9.2v8.4"/>
+							<path note:id="69" class="chime__pipe" d="M59.7,59.9V17.7h4.5v42.3H59.7z"/>
+						</g>
+						<g class="chime__pipe-wrap">
+							<path class="chime__string" d="M74.3,9.2v8.4"/>
+							<path note:id="74" class="chime__pipe" d="M72,49.1V17.7h4.5v31.4H72z"/>
+						</g>
+						<path class="chime__holder" d="M82.9,9.5H17.1V5h65.7V9.5z"/>
+					</svg>
+				</div>
+				<h3>If you enjoyed this demo you might also like:</h3>
+				<a class="media-item" href="http://tympanus.net/Development/AboveBeneath/">
+					<img class="media-item__img" src="img/related/AboveBeneath.jpg">
+					<h3 class="media-item__title">Above &amp; Beneath</h3>
+				</a>
+				<a class="media-item" href="http://tympanus.net/Development/RecordPlayer/">
+					<img class="media-item__img" src="img/related/RecordPlayer.jpg">
+					<h3 class="media-item__title">Interactive Record Player</h3>
+				</a>
+				<a class="media-item" href="http://tympanus.net/Tutorials/SVGDrums/">
+					<img class="media-item__img" src="img/related/Drums.jpg">
+					<h3 class="media-item__title">SVG Drums</h3>
+				</a>
+			</section>
+		</main>
+		<!-- keyboard events : used for the piano - assign keyboard keys to piano keys -->
+		<script src="js/mousetrap.min.js"></script>
+		<!-- the canvas wave animation -->
+		<script src="js/siriwave.js"></script>
+		<!-- js media queries : display the different sizes of pianos for different screen sizes -->
+		<script src="js/enquire.min.js"></script>
+		<!-- for some animations -->
+		<script src="js/anime.min.js"></script>
+		<!-- helper functions -->
+		<script src="js/helper.js"></script>
+		<!-- the piano -->
+		<script src="js/piano.js"></script>
+		<!-- the guitar -->
+		<script src="js/guitar.js"></script>
+		<!-- the kalimba -->
+		<script src="js/kalimba.js"></script>
+		<!-- the chimes -->
+		<script src="js/chimes.js"></script>
+		<!-- the timpani -->
+		<script src="js/timpani.js"></script>
+		<!-- the harp -->
+		<script src="js/harp.js"></script>
+		<!-- the xylophone -->
+		<script src="js/xylophone.js"></script>
+		<!-- the sax, tuba and pan flute -->
+		<script src="js/tinyinstrument.js"></script>
+		<!-- the microphone effect -->
+		<script src="js/mic.js"></script>
+		<!-- the violin effect -->
+		<script src="js/violin.js"></script>
+		<!-- main script -->
+		<script src="js/main.js"></script>
+	</body>
+</html>

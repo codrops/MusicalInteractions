@@ -1,0 +1,217 @@
+
+/* Instruments */
+.instrument {
+	position: absolute;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+	opacity: 1;
+	transition: opacity 1s;
+}
+
+.instrument--hidden {
+	opacity: 0;
+}
+
+.instrument > svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;   
+}
+
+/* Piano */
+.piano::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	background: linear-gradient(180deg, #fff, rgba(255,255,255,0));
+}
+
+.piano__key--natural {
+	fill: #fff;
+	stroke: #e4e4ec;
+	stroke-width: 0.5px;
+}
+
+.piano__key--natural.piano__key--active {
+	fill: #f0f0f5;
+}
+
+.piano__key--flat {
+	fill: #e4e4ec;
+}
+
+.piano__key--flat.piano__key--active {
+	fill: #fbce41;
+}
+
+/* Guitar */
+.guitar__body {
+	fill: #cac3b0;
+	stroke: #b7b09e;
+	stroke-width: 1px;
+}
+
+.guitar__neck,
+.guitar__stringcut {
+	fill: #b7b09f;
+}
+
+.guitar__middle {
+	fill: #afa99a;
+}
+
+.guitar__string {
+	pointer-events: none;
+	stroke: #e6e3d9;
+	stroke-width: 1.5px;
+}
+
+.guitar__string-hover {
+	pointer-events: visible;
+	fill: none;
+}
+
+/* Kalimba */
+.kalimba__inner {
+	fill: #ffe3a2;
+	stroke: #ffc938;
+	stroke-width: 1px;
+}
+
+/* Big chime */
+.chime__inner {
+	top: 10%;
+	left: 10%;
+	width: 80%;
+	height: 80%;
+}
+
+.chime--large .chime__pipe {
+	fill: #b3bfca;
+}
+
+.chime--large .chime__string {
+	stroke: #91a0ad;
+	stroke-width: 2px;
+}
+
+/* same tranform origin for tiny and large chime */
+.chime__pipe,
+.chime__string {
+	transform-origin: 50% -20%;
+}
+
+.chime--large .chime__pipe {
+	pointer-events: visible;
+}
+
+/* Timpani drums */
+.timpani__drum {
+	pointer-events: visible;
+	fill: #c1c8e8;
+    stroke: #3d51b7;
+	stroke-width: 2px;
+}
+
+.timpani__drum--active {
+	fill: #b2b8d6;
+}
+
+/* Harp */
+.harp__inner {
+	min-width: 30em;
+}
+
+.harp__body {
+	fill: #cc8969;
+}
+
+.harp__string-hover {
+	pointer-events: visible;
+	fill: none;
+}
+
+.harp__string {
+	stroke-width: 2px;
+	stroke: #fff;
+}
+
+.harp__string--c {
+	stroke: #e08f8f;
+}
+
+.harp__string--f {
+	stroke: #959dc3;
+}
+
+/* Xylophone */
+.xylophone__inner {
+	min-width: 49em;
+}
+
+.xylophone__key {
+	fill: #efe1ba;
+	stroke: #d4cbb2;
+	stroke-width: 1px;
+}
+
+.xylophone__key.xylophone__key--active {
+	fill: #decc9a;
+}
+
+.xylophone__base {
+	fill: #c8cc91;
+}
+
+/* Tiny instrument images */
+.tiny-instrument {
+	padding: 2em;
+	flex: none;
+	min-width: 290px;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+}
+
+.tiny-instrument__image {
+	max-width: 100%;
+	flex: none;
+	cursor: pointer;
+}
+
+/* Tiny chime */
+.chime--tiny {
+	width: 6em;
+	height: 7em;
+	display: block;
+	position: relative;
+	margin: 0 auto 5em;
+}
+
+.chime__holder,
+.chime--tiny .chime__pipe {
+	fill: #4d61c5;
+	stroke: none;
+}
+
+.chime--tiny .chime__string {
+	fill: none;
+	stroke: #4d61c5;
+	stroke-width: 1px;
+}
+
+
