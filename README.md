@@ -2,6 +2,8 @@
 
 Some experimental ideas for playful musical interactions powered by MIDI.js.
 
+![Musical Interactions](http://tympanus.net/codrops/wp-content/uploads/2016/12/MusicalInteractions_800x600.jpg)
+
 [Article on Codrops](http://tympanus.net/codrops/?p=28980)
 
 [Demo](http://tympanus.net/Development/MusicalInteractions/)
